@@ -6,7 +6,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./app:/app/app
+      - .:/app
     environment:
       POSTGRES_USER: documind
       POSTGRES_PASSWORD: documind
