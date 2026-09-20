@@ -6,7 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.database import get_db
 from app.db.models import User
 from app.schemas.user import UserCreate, UserResponse
-
+from app.core.security import hash_password
+from app.api.dependencies import get_current_user
 
 router = APIRouter(
     prefix="/users",
@@ -24,7 +25,6 @@ async def create_user(
     db: AsyncSession = Depends(get_db)
 ):
 
-    # Check if email already exists
     result = await db.execute(
         select(User).where(User.email == user_data.email)
     )
@@ -39,7 +39,8 @@ async def create_user(
 
     user = User(
         name=user_data.name,
-        email=user_data.email
+        email=user_data.email,
+        password_hash=hash_password(user_data.password)
     )
 
     db.add(user)
@@ -74,3 +75,12 @@ async def get_users(
     users = result.scalars().all()
 
     return users
+
+@router.get(
+    "/me",
+    response_model=UserResponse
+)
+async def get_current_user_profile(
+    current_user: User = Depends(get_current_user)
+):
+    return current_user

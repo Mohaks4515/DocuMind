@@ -5,6 +5,11 @@ asyncpg
 alembic
 psycopg2-binary
 
+#auth related dependencies
+bcrypt
+python-jose[cryptography]
+python-multipart
+
 python-dotenv
 pydantic-settings
 email-validator
