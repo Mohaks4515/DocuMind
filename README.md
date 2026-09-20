@@ -1,8 +1,8 @@
 # DocuMind
 
-> AI-powered Document Intelligence Platform built with FastAPI, PostgreSQL, Docker and Alembic.
+> AI-powered Document Intelligence Platform built with FastAPI, PostgreSQL, Docker, JWT Authentication and Alembic.
 
-DocuMind is a backend-focused document intelligence platform designed to upload, process, search and interact with documents using AI and RAG.
+DocuMind is a backend-focused AI document intelligence platform designed to upload, process, search and interact with documents using AI and RAG.
 
 The project is being developed step-by-step using a production-style architecture with authentication, document processing, vector search, background jobs and local AI models.
 
@@ -15,6 +15,7 @@ The project is being developed step-by-step using a production-style architectur
 - [x] FastAPI application setup
 - [x] Docker & Docker Compose setup
 - [x] PostgreSQL database
+- [x] PostgreSQL + pgvector environment
 - [x] SQLAlchemy ORM
 - [x] User model
 - [x] Document model
@@ -23,17 +24,20 @@ The project is being developed step-by-step using a production-style architectur
 - [x] Pydantic schemas
 - [x] Database relationships
 - [x] Alembic migrations
-- [x] PostgreSQL + pgvector ready environment
+- [x] Password hashing with bcrypt
+- [x] User registration
+- [x] JWT authentication
+- [x] Login API
+- [x] JWT token validation
+- [x] Protected `/users/me` endpoint
+- [x] Swagger OAuth2 authentication
 
 ### Upcoming
 
-- [ ] User authentication
-- [ ] Password hashing
-- [ ] JWT authentication
-- [ ] Protected APIs
 - [ ] Document upload
 - [ ] PDF text extraction
-- [ ] Document chunking
+- [ ] Document processing pipeline
+- [ ] Text chunking
 - [ ] Embeddings
 - [ ] Vector search with pgvector
 - [ ] RAG pipeline
@@ -47,7 +51,9 @@ The project is being developed step-by-step using a production-style architectur
 
 ---
 
-## 🏗️ Architecture
+# 🏗️ Architecture
+
+### Current Architecture
 
 ```text
                     ┌──────────────┐
@@ -62,25 +68,43 @@ The project is being developed step-by-step using a production-style architectur
               ┌────────────┴────────────┐
               │                         │
               ▼                         ▼
-       ┌──────────────┐         ┌──────────────┐
-       │ PostgreSQL   │         │   Services   │
-       │  + pgvector  │         │              │
-       └──────────────┘         └──────┬───────┘
-                                       │
-                                       ▼
-                              Document Processing
-                                       │
-                                       ▼
-                                    Chunks
-                                       │
-                                       ▼
-                                  Embeddings
-                                       │
-                                       ▼
-                                  Vector Search
-                                       │
-                                       ▼
-                                  RAG Pipeline
-                                       │
-                                       ▼
-                              Local LLM (Ollama)
+       ┌──────────────┐         ┌───────────────┐
+       │ PostgreSQL   │         │Authentication │
+       │  + pgvector  │         │ JWT + bcrypt  │
+       └──────────────┘         └───────────────┘
+
+
+### Planned Document intelligence
+                         PDF
+                          │
+                          ▼
+                    ┌───────────┐
+                    │  FastAPI  │
+                    └─────┬─────┘
+                          │
+                          ▼
+                 Document Processing
+                          │
+                          ▼
+                   Text Extraction
+                          │
+                          ▼
+                      Chunking
+                          │
+                          ▼
+                     Embeddings
+                          │
+                          ▼
+                PostgreSQL + pgvector
+                          │
+                          ▼
+                   Vector Search
+                          │
+                          ▼
+                        RAG
+                          │
+                          ▼
+                  Local LLM / Ollama
+                          │
+                          ▼
+                 Answer + Citations
